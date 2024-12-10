@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
+import type { Card } from '~/types/card';
 
 export const useStore = defineStore('store', () => {
-  const todoList = ref([
+  const todoList = ref<Card[]>([
     {
       id: 2,
       status: 'todo',
@@ -14,7 +15,7 @@ export const useStore = defineStore('store', () => {
     },
   ]);
 
-  const doneList = ref([
+  const doneList = ref<Card[]>([
     {
       id: 3,
       status: 'done',
@@ -37,7 +38,7 @@ export const useStore = defineStore('store', () => {
     },
   ]);
 
-  const inProgressCards = ref([
+  const inProgressCards = ref<Card[]>([
     {
       id: 1,
       status: 'in_progress',
@@ -50,7 +51,7 @@ export const useStore = defineStore('store', () => {
     },
   ]);
 
-  const backlogsCards = ref([
+  const backlogsCards = ref<Card[]>([
     {
       id: 4,
       status: 'backlog',
@@ -66,7 +67,7 @@ export const useStore = defineStore('store', () => {
       status: 'backlog',
       title: 'Backlog test2',
       description: '',
-      priority: 'low',
+      priority: 'medium',
       owner: '',
       assignees: [],
       created: new Date(),
@@ -76,7 +77,7 @@ export const useStore = defineStore('store', () => {
       status: 'backlog',
       title: 'Backlog test3',
       description: '',
-      priority: 'low',
+      priority: 'high',
       owner: '',
       assignees: [],
       created: new Date(),
@@ -84,8 +85,16 @@ export const useStore = defineStore('store', () => {
   ]);
 
   const persons = ['John Doe', 'Jane Smith', 'Andrii Dulkai'];
+
   const statuses = ['in_progress', 'done', 'todo', 'backlog'];
+
   const priorities = ['low', 'medium', 'high'];
+
+  const dialogSettings = ref({
+    active: false,
+    status: '',
+    item: null,
+  });
 
   const addNewTask = (task) => {
     cards.value.push(task);
@@ -136,14 +145,25 @@ export const useStore = defineStore('store', () => {
     }
   };
 
+  const openDialog = (status: string, body?: Card) => {
+    dialogSettings.value.active = true;
+    dialogSettings.value.status = status;
+
+    if (body) {
+      dialogSettings.value.item = body;
+    }
+  };
+
   return {
     todoList,
     doneList,
+    dialogSettings,
     inProgressCards,
     backlogsCards,
     statuses,
     priorities,
     persons,
+    openDialog,
     addNewTask,
     removeTask,
     updateTask,

@@ -23,6 +23,14 @@ const onChange = (val) => {
     });
   }
 };
+
+const createCard = () => {
+  store.openDialog('todo');
+};
+
+const openDialog = (card) => {
+  store.openDialog('backlog', card);
+};
 </script>
 
 <template>
@@ -42,6 +50,7 @@ const onChange = (val) => {
                 v-for="(item, index) in list"
                 :key="index"
                 :item="item"
+                @click="openDialog(item)"
               ></task-item>
             </vue-draggable-next>
           </client-only>

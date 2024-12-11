@@ -4,20 +4,30 @@ import { useNotification } from '~/composibles/useNotification';
 
 const store = useStore();
 const { dialogSettings } = storeToRefs(store);
-const { successMessage } = useNotification();
-
-const title = computed(() => {
-  return dialogSettings.value.item ? 'Edit card' : 'Create card';
-});
+const { successMessage, warningMessage } = useNotification();
 
 const payload = ref({
-  status: dialogSettings.value.status,
+  status: '',
   title: '',
   description: '',
   priority: '',
   owner: '',
   assignees: [],
 });
+
+const rules = computed(() => {
+  return {
+    status: !payload.value.status || !payload.value.status,
+    title: !payload.value.title || !payload.value.title.length,
+    description:
+      !payload.value.description || !payload.value.description.length,
+    priority: !payload.value.priority || !payload.value.priority.length,
+    owner: !payload.value.owner || !payload.value.owner.length,
+    assignees: !payload.value.assignees || !payload.value.assignees.length,
+  };
+});
+
+const isError = ref(false);
 
 watch(
   () => dialogSettings.value.item,
@@ -29,6 +39,23 @@ watch(
     else clearPayload();
   },
 );
+
+watch(
+  () => dialogSettings.value.status,
+  (newVal) => {
+    payload.value.status = newVal;
+  },
+);
+
+const title = computed(() => {
+  return dialogSettings.value.item ? 'Edit card' : 'Create card';
+});
+
+const validation = () => {
+  Object.values(rules.value).forEach((value) => {
+    if (value) isError.value = true;
+  });
+};
 
 const clearPayload = () => {
   payload.value = {
@@ -42,14 +69,20 @@ const clearPayload = () => {
 };
 
 const createCard = () => {
-  if (!dialogSettings.value.item) {
-    store.createTask(payload.value, payload.value.status);
-    successMessage('Order was created successfully!');
+  validation();
+
+  if (!isError.value) {
+    if (!dialogSettings.value.item) {
+      store.createTask(payload.value, payload.value.status);
+      successMessage('Order was created successfully!');
+    } else {
+      store.updateTask(payload.value, payload.value.status);
+      successMessage('Order was updated successfully!');
+    }
+    dialogSettings.value.active = false;
   } else {
-    store.updateTask(payload.value, payload.value.status);
-    successMessage('Order was updated successfully!');
+    warningMessage('Validation failed');
   }
-  dialogSettings.value.active = false;
 };
 
 const closeDialog = () => {
@@ -70,7 +103,12 @@ const closeDialog = () => {
         <div class="col">
           <div class="flex flex-column gap-2">
             <label class="font-medium text-xl" for="title">Title</label>
-            <InputText id="title" v-model="payload.title" />
+            <InputText
+              id="title"
+              v-model="payload.title"
+              :invalid="rules.title"
+              placeholder="Title"
+            />
           </div>
         </div>
         <div class="col">
@@ -80,6 +118,7 @@ const closeDialog = () => {
               id="status"
               v-model="payload.status"
               :options="store.statuses"
+              :invalid="rules.status"
               placeholder="Select status"
               class="w-full md:w-56"
             />
@@ -93,6 +132,7 @@ const closeDialog = () => {
             <Select
               v-model="payload.owner"
               :options="store.persons"
+              :invalid="rules.owner"
               placeholder="Select owner"
               class="w-full md:w-56"
               id="owner"
@@ -107,6 +147,7 @@ const closeDialog = () => {
             <MultiSelect
               v-model="payload.assignees"
               :options="store.persons"
+              :invalid="rules.assignees"
               placeholder="Select assignments"
               class="w-full md:w-80"
               id="assignment"
@@ -117,11 +158,12 @@ const closeDialog = () => {
       <div class="grid">
         <div class="col-6">
           <div class="flex flex-column gap-2">
-            <label class="font-medium text-xl" for="status">Priority</label>
+            <label class="font-medium text-xl" for="priority">Priority</label>
             <Select
-              id="status"
+              id="priority"
               v-model="payload.priority"
               :options="store.priorities"
+              :invalid="rules.priority"
               placeholder="Select priority"
               class="w-full md:w-56"
             >
@@ -159,6 +201,8 @@ const closeDialog = () => {
           id="description"
           style="resize: none"
           v-model="payload.description"
+          :invalid="rules.description"
+          placeholder="Description"
         />
       </div>
       <div class="grid">

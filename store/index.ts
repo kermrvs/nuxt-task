@@ -96,12 +96,45 @@ export const useStore = defineStore('store', () => {
     item: null,
   });
 
+  watch(
+    () => dialogSettings.value.active,
+    (newVal) => {
+      if (!newVal) {
+        dialogSettings.value.item = null;
+      }
+    },
+  );
+
   const addNewTask = (task) => {
     cards.value.push(task);
   };
 
-  const removeTask = (taskId) => {
-    cards.value = cards.value.filter((task) => task.id !== taskId);
+  const removeTask = (taskId, status) => {
+    switch (status) {
+      case 'done': {
+        doneList.value = doneList.value.filter((el) => el.id !== taskId);
+        break;
+      }
+      case 'in_progress': {
+        inProgressCards.value = inProgressCards.value.filter(
+          (el) => el.id !== taskId,
+        );
+        break;
+      }
+      case 'todo': {
+        todoList.value = todoList.value.filter((el) => el.id !== taskId);
+        break;
+      }
+      case 'backlog': {
+        backlogsCards.value = backlogsCards.value.filter(
+          (el) => el.id !== taskId,
+        );
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   };
 
   const updateTask = ({ task, newStatus }) => {

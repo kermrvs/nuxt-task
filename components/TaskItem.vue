@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { Card } from '~/types/card';
+import { useStore } from '~/store';
 
 interface IProps {
   item: Card;
 }
 
 const props = defineProps<IProps>();
+
+const store = useStore();
 
 const date = computed(() => {
   const date = new Date(props.item.created);
@@ -14,6 +17,14 @@ const date = computed(() => {
   const year = date.getFullYear();
   return `${day}:${month}:${year}`;
 });
+
+const openDialog = () => {
+  store.openDialog('backlog', props.item);
+};
+
+const removeItem = () => {
+  store.removeTask(props.item.id, props.item.status);
+};
 </script>
 
 <template>
@@ -38,6 +49,20 @@ const date = computed(() => {
       <div class="mt-4">
         Created at <span class="time">{{ date }}</span>
       </div>
+      <div class="flex gap-2 mt-2">
+        <Button
+          icon="pi pi-pencil"
+          class="card-btn"
+          severity="info"
+          @click="openDialog"
+        ></Button>
+        <Button
+          icon="pi pi-trash"
+          class="card-btn"
+          severity="danger"
+          @click="removeItem"
+        ></Button>
+      </div>
     </template>
   </Card>
 </template>
@@ -46,5 +71,14 @@ const date = computed(() => {
 .time {
   font-weight: 600;
   font-size: 14px;
+}
+
+:deep(.card-btn) {
+  font-size: 11px;
+  width: 30px;
+
+  span {
+    font-size: 11px;
+  }
 }
 </style>

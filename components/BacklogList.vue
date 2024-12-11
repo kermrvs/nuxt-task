@@ -50,7 +50,6 @@ const openDialog = (card) => {
                 v-for="(item, index) in list"
                 :key="index"
                 :item="item"
-                @click="openDialog(item)"
               ></task-item>
             </vue-draggable-next>
           </client-only>

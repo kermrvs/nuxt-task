@@ -17,10 +17,7 @@ const list = computed({
 const onChange = (val) => {
   const { added } = val;
   if (added) {
-    store.updateTask({
-      task: added.element,
-      newStatus: 'in_progress',
-    });
+    store.updateTask(added.element, 'in_progress');
   }
 };
 

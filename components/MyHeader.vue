@@ -1,15 +1,16 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>
-    <Card>
-      <template #content>
+  <Card>
+    <template #content>
+      <header class="flex justify-content-between align-items-center">
+        <div class="font-bold text-3xl">Task manager</div>
         <div>
-          <Button label="Add new task" />
+          <Avatar label="P" class="mr-2" size="large" />
         </div>
-      </template>
-    </Card>
-  </div>
+      </header>
+    </template>
+  </Card>
 </template>
 
 <style scoped></style>

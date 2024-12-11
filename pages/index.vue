@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="container">
+  <section class="container">
     <div class="grid">
       <div class="col">
         <backlog-list></backlog-list>
@@ -16,7 +16,7 @@
         <done-list></done-list>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped></style>

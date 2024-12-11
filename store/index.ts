@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import type { Card } from '~/types/card';
+import { v4 as uuidv4 } from 'uuid';
+import { updateObject } from '~/util/update.object';
 
 export const useStore = defineStore('store', () => {
   const todoList = ref<Card[]>([
@@ -96,6 +98,12 @@ export const useStore = defineStore('store', () => {
     item: null,
   });
 
+  const onRemoveDialogSettings = ref({
+    active: false,
+    taskId: null,
+    status: null,
+  });
+
   watch(
     () => dialogSettings.value.active,
     (newVal) => {
@@ -105,85 +113,156 @@ export const useStore = defineStore('store', () => {
     },
   );
 
-  const addNewTask = (task) => {
-    cards.value.push(task);
+  watch(
+    () => onRemoveDialogSettings.value.active,
+    (newVal) => {
+      if (!newVal) {
+        dialogSettings.value.taskId = null;
+        dialogSettings.value.status = null;
+      }
+    },
+  );
+
+  const onRemoveTask = (taskId, status) => {
+    onRemoveDialogSettings.value.taskId = taskId;
+    onRemoveDialogSettings.value.status = status;
+    onRemoveDialogSettings.value.active = true;
   };
 
   const removeTask = (taskId, status) => {
-    switch (status) {
-      case 'done': {
-        doneList.value = doneList.value.filter((el) => el.id !== taskId);
-        break;
+    try {
+      switch (status) {
+        case 'done': {
+          doneList.value = doneList.value.filter((el) => el.id !== taskId);
+          break;
+        }
+        case 'in_progress': {
+          inProgressCards.value = inProgressCards.value.filter(
+            (el) => el.id !== taskId,
+          );
+          break;
+        }
+        case 'todo': {
+          todoList.value = todoList.value.filter((el) => el.id !== taskId);
+          break;
+        }
+        case 'backlog': {
+          backlogsCards.value = backlogsCards.value.filter(
+            (el) => el.id !== taskId,
+          );
+          break;
+        }
+        default: {
+          break;
+        }
       }
-      case 'in_progress': {
-        inProgressCards.value = inProgressCards.value.filter(
-          (el) => el.id !== taskId,
-        );
-        break;
-      }
-      case 'todo': {
-        todoList.value = todoList.value.filter((el) => el.id !== taskId);
-        break;
-      }
-      case 'backlog': {
-        backlogsCards.value = backlogsCards.value.filter(
-          (el) => el.id !== taskId,
-        );
-        break;
-      }
-      default: {
-        break;
-      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
-  const updateTask = ({ task, newStatus }) => {
-    switch (newStatus) {
-      case 'done': {
-        const item = doneList.value.find((el) => el.id === task.id);
-
-        if (item) {
-          item.status = 'done';
+  const createTask = (task, status) => {
+    try {
+      switch (status) {
+        case 'done': {
+          doneList.value.push({
+            ...task,
+            id: uuidv4(),
+            created: new Date(),
+          });
+          break;
         }
-        break;
-      }
-      case 'in_progress': {
-        const item = inProgressCards.value.find((el) => el.id === task.id);
-
-        if (item) {
-          item.status = 'in_progress';
+        case 'in_progress': {
+          inProgressCards.value.push({
+            ...task,
+            id: uuidv4(),
+            created: new Date(),
+          });
+          break;
         }
-        break;
-      }
-      case 'todo': {
-        const item = todoList.value.find((el) => el.id === task.id);
-
-        if (item) {
-          item.status = 'todo';
+        case 'todo': {
+          todoList.value.push({
+            ...task,
+            id: uuidv4(),
+            created: new Date(),
+          });
+          break;
         }
-        console.log(item);
-        break;
-      }
-      case 'backlog': {
-        const item = backlogsCards.value.find((el) => el.id === task.id);
-
-        if (item) {
-          item.status = 'backlog';
+        case 'backlog': {
+          backlogsCards.value.push({
+            ...task,
+            id: uuidv4(),
+            created: new Date(),
+          });
+          break;
         }
-        break;
+        default: {
+          break;
+        }
       }
-      default: {
-        break;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const updateTask = (task, newStatus) => {
+    try {
+      switch (newStatus) {
+        case 'done': {
+          const item = doneList.value.find((el) => el.id === task.id);
+
+          if (item) {
+            task.status = 'done';
+            updateObject(task, item);
+          }
+          break;
+        }
+        case 'in_progress': {
+          const item = inProgressCards.value.find((el) => el.id === task.id);
+
+          if (item) {
+            task.status = 'in_progress';
+            updateObject(task, item);
+          }
+          break;
+        }
+        case 'todo': {
+          const item = todoList.value.find((el) => el.id === task.id);
+
+          if (item) {
+            task.status = 'todo';
+            updateObject(task, item);
+          }
+          console.log(item);
+          break;
+        }
+        case 'backlog': {
+          const item = backlogsCards.value.find((el) => el.id === task.id);
+
+          if (item) {
+            task.status = 'backlog';
+            updateObject(task, item);
+          }
+          break;
+        }
+        default: {
+          break;
+        }
       }
+    } catch (e) {
+      console.log(e);
     }
   };
 
   const openDialog = (status: string, body?: Card) => {
-    dialogSettings.value.active = true;
-    dialogSettings.value.status = status;
-
-    if (body) {
-      dialogSettings.value.item = body;
+    try {
+      if (body) {
+        dialogSettings.value.item = body;
+      }
+      dialogSettings.value.status = status;
+      dialogSettings.value.active = true;
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -196,9 +275,11 @@ export const useStore = defineStore('store', () => {
     statuses,
     priorities,
     persons,
+    onRemoveDialogSettings,
+    createTask,
     openDialog,
-    addNewTask,
     removeTask,
     updateTask,
+    onRemoveTask,
   };
 });

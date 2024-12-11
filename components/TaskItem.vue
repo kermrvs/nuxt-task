@@ -23,14 +23,14 @@ const openDialog = () => {
 };
 
 const removeItem = () => {
-  store.removeTask(props.item.id, props.item.status);
+  store.onRemoveTask(props.item.id, props.item.status);
 };
 </script>
 
 <template>
   <Card class="cursor-pointer">
     <template #content>
-      <div class="flex justify-content-between">
+      <div class="flex justify-content-between align-items-center">
         <div>{{ item.title }}</div>
         <Tag class="capitalize" value="Primary" v-if="item.priority === 'low'">
           {{ item.priority }}
@@ -47,7 +47,12 @@ const removeItem = () => {
         </Tag>
       </div>
       <div class="mt-4">
-        Created at <span class="time">{{ date }}</span>
+        <div>
+          Owner: <span class="time">{{ item.owner }}</span>
+        </div>
+        <div>
+          Created at: <span class="time">{{ date }}</span>
+        </div>
       </div>
       <div class="flex gap-2 mt-2">
         <Button

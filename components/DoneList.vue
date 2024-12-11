@@ -17,19 +17,12 @@ const list = computed({
 const onChange = (val) => {
   const { added } = val;
   if (added) {
-    store.updateTask({
-      task: added.element,
-      newStatus: 'done',
-    });
+    store.updateTask(added.element, 'done');
   }
 };
 
 const createCard = () => {
   store.openDialog('done');
-};
-
-const openDialog = (card) => {
-  store.openDialog('backlog', card);
 };
 </script>
 

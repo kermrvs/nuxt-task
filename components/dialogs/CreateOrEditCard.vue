@@ -19,8 +19,6 @@ const rules = computed(() => {
   return {
     status: !payload.value.status || !payload.value.status,
     title: !payload.value.title || !payload.value.title.length,
-    description:
-      !payload.value.description || !payload.value.description.length,
     priority: !payload.value.priority || !payload.value.priority.length,
     owner: !payload.value.owner || !payload.value.owner.length,
     assignees: !payload.value.assignees || !payload.value.assignees.length,
@@ -28,6 +26,7 @@ const rules = computed(() => {
 });
 
 const isError = ref(false);
+const prevStatus = ref();
 
 watch(
   () => dialogSettings.value.item,
@@ -44,6 +43,7 @@ watch(
   () => dialogSettings.value.status,
   (newVal) => {
     payload.value.status = newVal;
+    prevStatus.value = newVal;
   },
 );
 
@@ -53,7 +53,7 @@ const title = computed(() => {
 
 const validation = () => {
   Object.values(rules.value).forEach((value) => {
-    if (value) isError.value = true;
+    isError.value = value;
   });
 };
 
@@ -77,6 +77,12 @@ const createCard = () => {
       successMessage('Order was created successfully!');
     } else {
       store.updateTask(payload.value, payload.value.status);
+      if (payload.value.status !== prevStatus.value)
+        store.updateLists({
+          task: payload.value,
+          newStatus: payload.value.status,
+          prevStatus: prevStatus.value,
+        });
       successMessage('Order was updated successfully!');
     }
     dialogSettings.value.active = false;
@@ -201,7 +207,6 @@ const closeDialog = () => {
           id="description"
           style="resize: none"
           v-model="payload.description"
-          :invalid="rules.description"
           placeholder="Description"
         />
       </div>

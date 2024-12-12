@@ -19,7 +19,7 @@ const date = computed(() => {
 });
 
 const openDialog = () => {
-  store.openDialog('backlog', props.item);
+  store.openDialog(props.item.status, props.item);
 };
 
 const removeItem = () => {
@@ -46,9 +46,9 @@ const removeItem = () => {
           {{ item.priority }}
         </Tag>
       </div>
-      <div class="mt-4">
+      <div class="mt-4 flex justify-content-between">
         <div>
-          Owner: <span class="time">{{ item.owner }}</span>
+          Owner: <span class="owner">{{ item.owner }}</span>
         </div>
         <div>
           Created at: <span class="time">{{ date }}</span>
@@ -78,12 +78,13 @@ const removeItem = () => {
   font-size: 14px;
 }
 
+.owner {
+  font-weight: 600;
+  font-size: 18px;
+}
+
 :deep(.card-btn) {
   font-size: 11px;
   width: 30px;
-
-  span {
-    font-size: 11px;
-  }
 }
 </style>

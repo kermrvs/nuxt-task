@@ -27,8 +27,8 @@ const submit = () => {
     header="Remove"
     :style="{ width: '25rem' }"
   >
-    <span class="text-surface-500 dark:text-surface-400 block mb-4">
-      You want ot remove task. Please submit!
+    <span class="text-surface-500 text-xl block mb-4">
+      You want to remove task. Please submit!
     </span>
     <div class="grid">
       <div class="col">

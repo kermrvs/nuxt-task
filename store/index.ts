@@ -11,7 +11,7 @@ export const useStore = defineStore('store', () => {
       title: 'TODO test',
       description: '',
       priority: 'low',
-      owner: '',
+      owner: 'John Doe',
       assignees: ['John Doe', 'Jane Smith'],
       created: new Date(),
     },
@@ -24,7 +24,7 @@ export const useStore = defineStore('store', () => {
       title: 'Done test1',
       description: '',
       priority: 'low',
-      owner: '',
+      owner: 'John Doe',
       assignees: ['Jane Smith'],
       created: new Date(),
     },
@@ -34,7 +34,7 @@ export const useStore = defineStore('store', () => {
       title: 'Done test2',
       description: '',
       priority: 'low',
-      owner: '',
+      owner: 'John Doe',
       assignees: ['Jane Smith'],
       created: new Date(),
     },
@@ -47,7 +47,7 @@ export const useStore = defineStore('store', () => {
       title: 'In progress test',
       description: '',
       priority: 'low',
-      owner: '',
+      owner: 'John Doe',
       assignees: ['John Doe'],
       created: new Date(),
     },
@@ -60,8 +60,8 @@ export const useStore = defineStore('store', () => {
       title: 'Backlog test',
       description: '',
       priority: 'low',
-      owner: '',
-      assignees: [],
+      owner: 'John Doe',
+      assignees: ['John Doe'],
       created: new Date(),
     },
     {
@@ -70,8 +70,8 @@ export const useStore = defineStore('store', () => {
       title: 'Backlog test2',
       description: '',
       priority: 'medium',
-      owner: '',
-      assignees: [],
+      owner: 'John Doe',
+      assignees: ['John Doe'],
       created: new Date(),
     },
     {
@@ -80,8 +80,8 @@ export const useStore = defineStore('store', () => {
       title: 'Backlog test3',
       description: '',
       priority: 'high',
-      owner: '',
-      assignees: [],
+      owner: 'John Doe',
+      assignees: ['John Doe'],
       created: new Date(),
     },
   ]);
@@ -233,7 +233,6 @@ export const useStore = defineStore('store', () => {
             task.status = 'todo';
             updateObject(task, item);
           }
-          console.log(item);
           break;
         }
         case 'backlog': {
@@ -243,6 +242,60 @@ export const useStore = defineStore('store', () => {
             task.status = 'backlog';
             updateObject(task, item);
           }
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const updateLists = ({ task, newStatus, prevStatus }) => {
+    try {
+      switch (prevStatus) {
+        case 'done': {
+          doneList.value = doneList.value.filter((el) => el.id !== task.id);
+          break;
+        }
+        case 'in_progress': {
+          inProgressCards.value = inProgressCards.value.filter(
+            (el) => el.id !== task.id,
+          );
+          break;
+        }
+        case 'todo': {
+          todoList.value = todoList.value.filter((el) => el.id !== task.id);
+          break;
+        }
+        case 'backlog': {
+          backlogsCards.value = backlogsCards.value.filter(
+            (el) => el.id !== task.id,
+          );
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+
+      switch (newStatus) {
+        case 'done': {
+          doneList.value.push(task);
+          break;
+        }
+        case 'in_progress': {
+          inProgressCards.value.push(task);
+          break;
+        }
+        case 'todo': {
+          todoList.value.push(task);
+          break;
+        }
+        case 'backlog': {
+          backlogsCards.value.push(task);
           break;
         }
         default: {
@@ -276,6 +329,7 @@ export const useStore = defineStore('store', () => {
     priorities,
     persons,
     onRemoveDialogSettings,
+    updateLists,
     createTask,
     openDialog,
     removeTask,
